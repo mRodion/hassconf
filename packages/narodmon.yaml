@@ -1,0 +1,209 @@
+﻿#Send data to narodmon every 5 min by MQTT   
+automation:
+  - alias: "Kitchen heater trurned on by narodmon"
+    trigger:
+      - platform: mqtt
+        topic: "narodmon/rodionpm/65932/SwicthKitchen"
+        payload: '1'
+    action:
+      - service: switch.turn_on
+        entity_id: switch.kitchen_heater
+  - alias: "Kitchen heater trurneff on by narodmon"
+    trigger:
+      - platform: mqtt
+        topic: "narodmon/rodionpm/65932/SwicthKitchen"
+        payload: '0'
+    action:
+      - service: switch.turn_off
+        entity_id: switch.kitchen_heater
+        
+#  - alias: "Send Kitchen heater status to narodmon"
+#    trigger: 
+#      - platform: state
+#        entity_id: switch.kitchen_heater 
+#    action:
+#    - service: mqtt.publish
+#      data_template:
+#        topic: 'rodionpm/65932/SwicthKitchen'
+#        payload_template: '{% if is_state("switch.kitchen_heater","on") %}1{% else %}0{% endif %}'
+        
+        
+  - alias: "Send data to narodmon every 5 min by MQTT"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: time
+        minutes: '/5'
+        seconds: '0'
+    action:
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/TLivingroom'
+          payload_template: '{{ states.sensor.livingroom_broadlink_temp.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/HLivingroom'
+          payload_template: '{{ states.sensor.broadlink_sensor_humidity.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/AirLivingroom'
+          payload_template: '{{ states.sensor.broadlink_sensor_air_quality.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/LightLivingroom'
+          payload_template: '{{ states.sensor.broadlink_sensor_light.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/NoiseLivingroom'
+          payload_template: '{{ states.sensor.broadlink_sensor_noise.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/Power'
+          payload_template: '{{ states.sensor.power.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/Voltage'
+          payload_template: '{{ states.sensor.voltage.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/Current'
+          payload_template: '{{ states.sensor.current.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/KWh'
+          payload_template: '{{ states.sensor.kwh.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/TKitchen'
+          payload_template: '{{ states.sensor.kitchen_t1.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/HKitchen'
+          payload_template: '{{ states.sensor.kitchenhum.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/Pressure'
+          payload_template: '{{ states.sensor.pressure.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/TFloor2'
+          payload_template: '{{ states.sensor.floor2_t1.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/HFloor2'
+          payload_template: '{{ states.sensor.floor2hum.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/TLightroom'
+          payload_template: '{{ states.sensor.lightroom_t1.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/HLightroom'
+          payload_template: '{{ states.sensor.lightroomhum.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/TSmallroom'
+          payload_template: '{{ states.sensor.smallroom_t1.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/HSmallroom'
+          payload_template: '{{ states.sensor.smallroomhum.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/TBanya'
+          payload_template: '{{ states.sensor.banya_t1.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/HBanya'
+          payload_template: '{{ states.sensor.banyahum.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/TOut'
+          payload_template: '{{ states.sensor.out_t1.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/HOut'
+          payload_template: '{{ states.sensor.outhum.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/TBanyaWasherAir'
+          payload_template: '{{ states.sensor.banyawasherair.state }}'
+
+  - alias: "Send data2 to narodmon every 5 min by MQTT"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: time
+        minutes: '/5'
+        seconds: '0'
+    action:
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/TBanyaHall'
+          payload_template: '{{ states.sensor.banyahall_T1.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/HBanyaHall'
+          payload_template: '{{ states.sensor.banyahallhum.state }}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/TOutForecast'
+          payload_template: '{{ states.sensor.weather_temperature.state }}'
+
+  - alias: "Send data to narodmon every 6 min by MQTT"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: time
+        minutes: '/6'
+        seconds: '0'
+    action:
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/SwicthLivingroom'
+          payload_template: '{% if is_state("switch.livingroom_heater","on") %}1{% else %}0{% endif %}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/SwicthSmallroom'
+          payload_template: '{% if is_state("switch.smallroom_heater","on") %}1{% else %}0{% endif %}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/SwicthLightroom'
+          payload_template: '{% if is_state("switch.lightroom_heater","on") %}1{% else %}0{% endif %}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/SwicthKitchen'
+          payload_template: '{% if is_state("switch.kitchen_heater","on") %}1{% else %}0{% endif %}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/SwicthBoiler'
+          payload_template: '{% if is_state("switch.boiler_switch","on") %}1{% else %}0{% endif %}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/SwicthColdtube'
+          payload_template: '{% if is_state("switch.coldtube_switch","on") %}1{% else %}0{% endif %}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/SwicthKanaliz'
+          payload_template: '{% if is_state("switch.kanaliz_switch","on") %}1{% else %}0{% endif %}'
+
+  - alias: "Send data2 to narodmon every 6 min by MQTT"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: time
+        minutes: '/6'
+        seconds: '0'
+    action:
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/SwicthBanyaToilet'
+          payload_template: '{% if is_state("switch.banyatoilet_heater","on") %}1{% else %}0{% endif %}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/SwicthBanyaDehumidifier'
+          payload_template: '{% if is_state("switch.banya_dehumidifier","on") %}1{% else %}0{% endif %}'
+      - service: mqtt.publish
+        data_template:
+          topic: 'rodionpm/65932/SwicthBanyaHall'
+          payload_template: '{% if is_state("switch.banyahall_heater","on") %}1{% else %}0{% endif %}'

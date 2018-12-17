@@ -1,0 +1,404 @@
+#Timer to switch on Boiler
+timer:
+  boiler_must_on:
+    duration: '00:10:00'
+
+#Timer to switch on Livingroom heater
+  livingroom_heater_must_on:
+    duration: '00:01:00'
+
+#Timer to switch on Livingroom climate control
+  livingroom_climate_must_on:
+    duration: '00:01:00'
+
+#Timer to switch on Smallroom heater
+  smallroom_heater_must_on:
+    duration: '00:01:30'
+
+#Timer to switch on Smallgroom climate control
+  smallroom_climate_must_on:
+    duration: '00:01:30'
+
+#Timer to switch on lightroom heater
+  lightroom_heater_must_on:
+    duration: '00:02:00'
+
+#Timer to switch on wmallgroom climate control
+  lightroom_climate_must_on:
+    duration: '00:02:00'
+    
+#Timer to switch on Kitchen heater
+  kitchen_heater_must_on:
+    duration: '00:02:30'
+
+#Timer to switch on Kitchen climate control
+  kitchen_climate_must_on:
+    duration: '00:02:30'
+
+input_boolean:
+#Main switch to control this automation
+  power_management:
+    name: Activate power management
+    initial: on
+
+#User can set own overcurrent value
+input_number:
+  overcurrent_value:
+    name: Max available current
+    initial: 24
+    min: 1
+    max: 30
+    step: 0.5
+    unit_of_measurement: "Ampers"
+    mode: slider
+
+homeassistant:
+  customize:
+    input_number.overcurrent_value:
+      persistent: true
+    input_boolean.power_management:
+      persistent: true
+
+
+group:
+  power_management_view:
+    name: Защита от перегрузки
+    icon: mdi:gauge-full
+    view: true
+    control: hidden
+    entities:
+      - group.power_management_group
+  power_management_group:
+    name: Защита от перегрузки
+    icon: mdi:gauge-full
+    view: false
+    control: hidden
+    entities:
+      - input_boolean.power_management
+      - input_number.overcurrent_value
+      - sensor.current
+      - switch.boiler_switch
+      - timer.boiler_must_on
+      - input_boolean.livingroom_allow_thermostat
+      - climate.living_room_thermostat
+      - switch.Livingroom_heater
+      - timer.livingroom_climate_must_on
+      - timer.livingroom_heater_must_on
+      - input_boolean.smallroom_allow_thermostat
+      - climate.small_room_thermostat
+      - switch.smallroom_heater
+      - timer.smallroom_climate_must_on
+      - timer.smallroom_heater_must_on
+      - input_boolean.lightroom_allow_thermostat
+      - climate.light_room_thermostat
+      - switch.lightroom_heater
+      - timer.lightroom_climate_must_on
+      - timer.lightroom_heater_must_on
+      - input_boolean.kitchen_allow_thermostat
+      - climate.kitchen_thermostat
+      - switch.kitchen_heater
+      - timer.kitchen_climate_must_on
+      - timer.kitchen_heater_must_on
+automation:
+# ================= Temporarily switch off livingroom climate automation =======================      
+#turn off livingroom thermostat when overcurrent detected
+  - alias: Switch off livingroom climate when overcurrent
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: template
+        value_template: "{% if (states.sensor.current.state|float) >= (states.input_number.overcurrent_value.state|float) %} true {% endif %}"
+    condition:
+      - condition: state
+        entity_id: input_boolean.power_management
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.livingroom_allow_thermostat
+        state: 'on'
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.livingroom_allow_thermostat
+      - service: timer.start
+        entity_id: timer.livingroom_climate_must_on
+ 
+#turn off livingroom heater when overcurrent detected if it's  switched on
+  - alias: Switch off livingroom heater when overcurrent
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: template
+        value_template: "{% if (states.sensor.current.state|float) >= (states.input_number.overcurrent_value.state|float) %} true {% endif %}"
+    condition:
+      - condition: state
+        entity_id: input_boolean.power_management
+        state: 'on'
+      - condition: state
+        entity_id: switch.livingroom_heater
+        state: 'on'
+    action:
+      - service: switch.turn_off
+        entity_id: switch.livingroom_heater
+      - service: timer.start
+        entity_id: timer.livingroom_heater_must_on
+
+#Switch on livingroom climate when timer finished
+  - alias: "Time to start Livingroom climate"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.livingroom_climate_must_on
+    action:
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.livingroom_allow_thermostat
+
+#Switch on livingroom heater when timer finished
+  - alias: "Time to start Livingroom heater"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.livingroom_heater_must_on
+    action:
+    - service: switch.turn_on
+      entity_id: switch.livingroom_heater
+
+# ================= Temporarily switch off smallroom climate automation =======================      
+#turn off smallroom thermostat when overcurrent detected
+  - alias: Switch off smallroom climate when overcurrent
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: template
+        value_template: "{% if (states.sensor.current.state|float) >= (states.input_number.overcurrent_value.state|float) %} true {% endif %}"
+    condition:
+      - condition: state
+        entity_id: input_boolean.power_management
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.smallroom_allow_thermostat
+        state: 'on'
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.smallroom_allow_thermostat
+      - service: timer.start
+        entity_id: timer.smallroom_climate_must_on
+ 
+#Switch off smallroom heater when overcurrent detected 
+  - alias: Switch off smallroom heater when overcurrent
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: template
+        value_template: "{% if (states.sensor.current.state|float) >= (states.input_number.overcurrent_value.state|float) %} true {% endif %}"
+    condition:
+      - condition: state
+        entity_id: input_boolean.power_management
+        state: 'on'
+      - condition: state
+        entity_id: switch.smallroom_heater
+        state: 'on'
+    action:
+      - service: switch.turn_off
+        entity_id: switch.smallroom_heater
+      - service: timer.start
+        entity_id: timer.smallroom_heater_must_on
+
+#Switch on smallroom climate when timer finished
+  - alias: "Time to start smallroom climate"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.smallroom_climate_must_on
+    action:
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.smallroom_allow_thermostat
+
+#Switch on smallroom heater when timer finished
+  - alias: "Time to start smallroom heater"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.smallroom_heater_must_on
+    action:
+    - service: switch.turn_on
+      entity_id: switch.smallroom_heater
+
+# ================= Temporarily switch off lightroom climate automation =======================      
+#turn off lightroom thermostat when overcurrent detected
+  - alias: Switch off lightroom climate when overcurrent
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: template
+        value_template: "{% if (states.sensor.current.state|float) >= (states.input_number.overcurrent_value.state|float) %} true {% endif %}"
+    condition:
+      - condition: state
+        entity_id: input_boolean.power_management
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.lightroom_allow_thermostat
+        state: 'on'
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.lightroom_allow_thermostat
+      - service: timer.start
+        entity_id: timer.lightroom_climate_must_on
+ 
+#Switch off lightroom heater when overcurrent detected 
+  - alias: Switch off lightroom heater when overcurrent
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: template
+        value_template: "{% if (states.sensor.current.state|float) >= (states.input_number.overcurrent_value.state|float) %} true {% endif %}"
+    condition:
+      - condition: state
+        entity_id: input_boolean.power_management
+        state: 'on'
+      - condition: state
+        entity_id: switch.lightroom_heater
+        state: 'on'
+    action:
+      - service: switch.turn_off
+        entity_id: switch.lightroom_heater
+      - service: timer.start
+        entity_id: timer.lightroom_heater_must_on
+
+#Switch on lightroom climate when timer finished
+  - alias: "Time to start lightroom climate"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.lightroom_climate_must_on
+    action:
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.lightroom_allow_thermostat
+
+#Switch on lightroom heater when timer finished
+  - alias: "Time to start lightroom heater"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.lightroom_heater_must_on
+    action:
+    - service: switch.turn_on
+      entity_id: switch.lightroom_heater
+
+# ================= Temporarily switch off kitchen climate automation =======================      
+#Switch off kitchen climate when overcurrent detected 
+  - alias: Switch off kitchen climate when overcurrent
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: template
+        value_template: "{% if (states.sensor.current.state|float) >= (states.input_number.overcurrent_value.state|float) %} true {% endif %}"
+    condition:
+      - condition: state
+        entity_id: input_boolean.power_management
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.kitchen_allow_thermostat
+        state: 'on'
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.kitchen_allow_thermostat
+      - service: timer.start
+        entity_id: timer.kitchen_climate_must_on
+
+#Switch off kitchen heater when overcurrent detected if it's  switched on
+  - alias: Switch off kitchen heater when overcurrent
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: template
+        value_template: "{% if (states.sensor.current.state|float) >= (states.input_number.overcurrent_value.state|float) %} true {% endif %}"
+    condition:
+      - condition: state
+        entity_id: input_boolean.power_management
+        state: 'on'
+      - condition: state
+        entity_id: switch.kitchen_heater
+        state: 'on'
+    action:
+      - service: switch.turn_off
+        entity_id: switch.kitchen_heater
+      - service: timer.start
+        entity_id: timer.kitchen_heater_must_on
+
+#Switch on kitchen climate when timer finished
+  - alias: "Time to start Kitchen climate"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.kitchen_climate_must_on
+    action:
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.kitchen_allow_thermostat
+
+#Switch on kitchen heater when timer finished
+  - alias: "Time to start Kitchen heater"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.kitchen_heater_must_on
+    action:
+    - service: switch.turn_on
+      entity_id: switch.kitchen_heater
+
+
+# ================= Temporarily switch off boiler automation =======================      
+#Switch off boiler when overcurrent detected if it's  switched on
+  - alias: Switch off Boiler when overcurrent
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: template
+        value_template: "{% if (states.sensor.current.state|float) >= (states.input_number.overcurrent_value.state|float) %} true {% endif %}"
+    condition:
+      - condition: state
+        entity_id: input_boolean.power_management
+        state: 'on'
+      - condition: state
+        entity_id: switch.boiler_switch
+        state: 'on'
+    action:
+      - service: switch.turn_off
+        entity_id: switch.boiler_switch
+      - service: timer.start
+        entity_id: timer.boiler_must_on
+
+#Switch on boiler when timer finished
+  - alias: "Time to start Boiler again"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.boiler_must_on
+    action:
+    - service: switch.turn_on
+      entity_id: switch.boiler_switch

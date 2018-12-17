@@ -1,0 +1,221 @@
+
+### sensors.yaml
+
+  # Weather prediction
+  - platform: yr
+    name: Weather
+    monitored_conditions:
+      - temperature
+      - dewpointTemperature
+
+
+  #Broadlink e-sensor A1
+  - platform: broadlink
+    update_interval: 30
+    host: 192.168.1.53
+    mac: '34:ea:34:b2:a4:69'
+    friendly_name: Livingroom
+    monitored_conditions:
+      - humidity
+      - air_quality
+      - light
+      - noise
+
+#  - platform: template
+#    sensors:
+#      livingroom_broadlink_temp:
+#        friendly_name: Livingroom Temp
+#        unit_of_measurement: "°C"
+#        value_template: "{{ (states('sensor.broadlink_sensor_temperature')|float - 4.0) | round (1) }}"
+
+  - platform: command_line
+    name: "livingroom_broadlink_temp"
+    unit_of_measurement: "°C"
+    command: "/home/rodion/rm3/python-broadlink/cli/sensors_broadlink.sh"
+
+  - platform: mqtt
+    name: "current"
+    icon: mdi:current-ac
+    state_topic: "/hass/HNPM2F0eda6d/I0"
+    unit_of_measurement: "A"
+    expire_after: 120
+ 
+  - platform: mqtt
+    name: "voltage"
+    icon: mdi:current-ac
+    state_topic: "/hass/HNPM2F0eda6d/U0"
+    unit_of_measurement: "V"
+    expire_after: 120
+  - platform: mqtt
+    name: "power"
+    icon: mdi:current-ac
+    state_topic: "/hass/HNPM2F0eda6d/W0"
+    unit_of_measurement: "Watt"
+    expire_after: 120
+  - platform: mqtt
+    name: "kwh"
+    icon: mdi:current-ac
+    state_topic: "/hass/HNPM2F0eda6d/KWH0"
+    unit_of_measurement: "Watt"
+    expire_after: 120
+
+
+#  - platform: rest
+#    name: Power
+#    resource: http://192.168.1.56/json
+#    json_attributes:
+#      - U0
+#      - I0
+#      - UPTIME
+#      - WH0
+#    value_template: '{{ value_json.W0 }}'
+#    unit_of_measurement: "Watt"
+#    scan_interval: 10
+#  - platform: template
+#    sensors:
+#      voltage:
+#        friendly_name: Voltage
+#        unit_of_measurement: "V"
+#        value_template: '{{ states.sensor.power.attributes["U0"] }}'
+#      current:
+#        friendly_name: Current
+#        unit_of_measurement: "A"
+#        value_template: '{{ states.sensor.power.attributes["I0"] }}'
+#      kwh:
+#        friendly_name: KWh
+#        unit_of_measurement: "KWh"
+#        value_template: '{{ states.sensor.power.attributes["WH0"] }}'
+#      poweruptime:
+#        friendly_name: Powermeter uptime
+#        value_template: '{{ states.sensor.power.attributes["UPTIME"] }}'
+#        unit_of_measurement: "sec"
+
+  - platform: rest
+    name: Kitchen T1
+#    friendly_name: Livingroom T1
+    resource: http://192.168.1.38/readjson
+    json_attributes:
+      - sensors
+    value_template: '{{ value_json.sensors["dhtt1"] }}'
+    unit_of_measurement: "°C"
+  - platform: template
+    sensors:
+      kitchenhum:
+        friendly_name: Kitchen Hum
+        unit_of_measurement: "%"
+        value_template: '{{ states.sensor.kitchen_t1.attributes["sensors"]["dhth1"] }}'
+      pressure:
+        friendly_name: Pressure
+        unit_of_measurement: "mm"
+        value_template: '{{ states.sensor.kitchen_t1.attributes["sensors"]["bmpp"] }}'
+
+
+  - platform: rest
+    name: Floor2 T1
+    resource: http://192.168.1.48/readjson
+    json_attributes:
+      - system
+      - sensors
+    value_template: '{{ value_json.sensors["dsw1"] }}'
+    unit_of_measurement: "°C"
+  - platform: template
+    sensors:
+      floor2hum:
+        friendly_name: Floor2 Hum
+        unit_of_measurement: "%"
+        value_template: '{{ states.sensor.floor2_t1.attributes["sensors"]["dhth1"] }}'
+      floor2t2:
+        friendly_name: Floor2 T2
+        unit_of_measurement: "°C"
+        value_template: '{{ states.sensor.floor2_t1.attributes["sensors"]["dhtt1"] }}'
+
+  - platform: rest
+    name: Lightroom T1
+    resource: http://192.168.1.50/readjson
+    json_attributes:
+      - sensors
+    value_template: '{{ value_json.sensors["dsw1"] }}'
+    unit_of_measurement: "°C"
+  - platform: template
+    sensors:
+      lightroomhum:
+        friendly_name: Lightroom Hum
+        unit_of_measurement: "%"
+        value_template: '{{ states.sensor.lightroom_t1.attributes["sensors"]["dhth1"] }}'
+      lightroomt2:
+        friendly_name: Lightroom T2
+        unit_of_measurement: "°C"
+        value_template: '{{ states.sensor.lightroom_t1.attributes["sensors"]["dhtt1"] }}'
+
+  - platform: rest
+    name: Smallroom T1
+    resource: http://192.168.1.52/readjson
+    json_attributes:
+      - sensors
+    value_template: '{{ value_json.sensors["dsw1"] }}'
+    unit_of_measurement: "°C"
+  - platform: template
+    sensors:
+      smallroomhum:
+        friendly_name: Smallroom Hum
+        unit_of_measurement: "%"
+        value_template: '{{ states.sensor.smallroom_t1.attributes["sensors"]["dhth1"] }}'
+      smallroomt2:
+        friendly_name: Smallroom T2
+        unit_of_measurement: "°C"
+        value_template: '{{ states.sensor.smallroom_t1.attributes["sensors"]["dhtt1"] }}'
+
+  - platform: rest
+    name: Banya T1
+    resource: http://192.168.1.62/readjson
+    json_attributes:
+      - sensors
+    value_template: '{{ value_json.sensors["dsw1"] }}'
+    unit_of_measurement: "°C"
+  - platform: template
+    sensors:
+      banyahum:
+        friendly_name: Banya Hum
+        unit_of_measurement: "%"
+        value_template: '{{ states.sensor.banya_t1.attributes["sensors"]["dhth1"] }}'
+      banyat2:
+        friendly_name: Banya T2
+        unit_of_measurement: "°C"
+        value_template: '{{ states.sensor.banya_t1.attributes["sensors"]["dhtt1"] }}'
+
+  - platform: rest
+    name: BanyaHall T1
+    resource: http://192.168.1.58/readjson
+    json_attributes:
+      - sensors
+    value_template: '{{ value_json.sensors["dhtt1"] }}'
+    unit_of_measurement: "°C"
+  - platform: template
+    sensors:
+      banyahallhum:
+        friendly_name: BanyaHall Hum
+        unit_of_measurement: "%"
+        value_template: '{{ states.sensor.banyahall_t1.attributes["sensors"]["dhth1"] }}'
+      banyahallpresure:
+        friendly_name: BanyaHall Pressure
+        unit_of_measurement: "mm"
+        value_template: '{{ states.sensor.banyahall_t1.attributes["sensors"]["bmpp"] }}'
+
+  - platform: rest
+    name: Out T1
+    resource: http://192.168.1.55/readjson
+    json_attributes:
+      - sensors
+    value_template: '{{ value_json.sensors["dsw1"] }}'
+    unit_of_measurement: "°C"
+  - platform: template
+    sensors:
+      outhum:
+        friendly_name: Out Hum
+        unit_of_measurement: "%"
+        value_template: '{{ states.sensor.out_t1.attributes["sensors"]["dhth1"] }}'
+      outt2:
+        friendly_name: Out T2
+        unit_of_measurement: "°C"
+        value_template: '{{ states.sensor.out_t1.attributes["sensors"]["dhtt1"] }}'
+

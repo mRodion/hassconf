@@ -1,0 +1,125 @@
+﻿views:
+  - title: Статус
+    icon: mdi:home-lock
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              ## Статус
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: input_boolean.global_away_mode
+                name: Режим "Нет дома"
+#          - type: divider
+          - type: markdown
+            content: >
+              ## Температуры
+          - type: glance
+#            column_width: calc(100% / 5)
+            entities:
+              - entity: sensor.livingroom_broadlink_temp
+                name: Гостиная
+              - entity: sensor.kitchen_t1
+                name: Кухня
+              - entity: sensor.lightroom_t1
+                name: Светлая
+          - type: glance
+#            column_width: calc(100% / 2)
+            entities:
+              - entity: sensor.smallroom_t1
+                name: Маленькая
+              - entity: sensor.banya_t1
+                name: Баня
+          - type: markdown
+            content: >
+              ## Обогрев
+          - type: glance
+#            columns: 3
+            show_state: false
+            entities:
+              - entity: binary_sensor.livingroom_heater_sensor2
+                name: Гостиная
+              - entity: binary_sensor.kitchen_heater_sensor2
+                name: Кухня
+              - entity: binary_sensor.smallroom_heater_sensor2
+                name: Маленькая
+          - type: glance
+#            columns: 3
+            show_state: false
+            entities:
+              - entity: binary_sensor.coldtube
+                name: Трубы
+              - entity: binary_sensor.kanaliz
+                name: Канализ
+              - entity: switch.boiler_switch
+                name: Бойлер
+                tap_action: toggle
+                
+          - type: markdown
+            content: >
+              ## Сеть 220В
+          - type: glance
+#            column_width: calc(100% / 3)
+            entities:
+              - entity: sensor.pm_voltage
+                name: Напряж
+              - entity: sensor.pm_current
+                name: Ток
+              - entity: sensor.pm_power
+                name: Мощн
+                    
+                    
+  - title: Статус
+    icon: mdi:home-lock
+    cards:
+      - type: entities
+        title: Нет дома
+#        show_name: false
+#        show_state: false
+#        column_width: calc(100% / 2)
+        show_header_toggle: false
+        entities:
+          - entity: input_boolean.global_away_mode
+            name: Режим "Нет дома"
+#            icon: mdi:desk-lamp
+            tap_action: toggle
+            state_icon:
+              "on": mdi:home-lock
+              "off": mdi:home-account
+          - sensor.kitchen_t1
+          - sensor.lightroom_t1
+          - sensor.smallroom_t1
+          - sensor.livingroom_broadlink_temp
+          - sensor.banya_t1
+          - binary_sensor.livingroom_heater_sensor2
+          - binary_sensor.smallroom_heater_sensor2
+          - binary_sensor.kitchen_heater_sensor2
+          - switch.boiler_switch
+          - sensor.current
+  - title: Тест
+    icon: mdi:rocket
+    cards:
+      - type: glance
+        title: Нет дома
+#        show_name: false
+#        show_state: false
+#        columns: calc(100% / 2)
+        entities:
+          - entity: input_boolean.global_away_mode
+            name: Режим "Нет дома"
+#            icon: mdi:desk-lamp
+            tap_action: toggle
+          - sensor.kitchen_t1
+          - sensor.lightroom_t1
+          - sensor.smallroom_t1
+          - sensor.livingroom_broadlink_temp
+          - sensor.banya_t1
+          - binary_sensor.livingroom_heater_sensor2
+          - binary_sensor.smallroom_heater_sensor2
+          - binary_sensor.kitchen_heater_sensor2
+          - switch.boiler_switch
+          - sensor.current
+
+      

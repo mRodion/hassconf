@@ -1,0 +1,63 @@
+﻿group:
+  temp_sensors_group:
+    name: Температура
+    icon: mdi:thermometer
+#    view: true
+    entities:
+      - sensor.livingroom_broadlink_temp
+      - sensor.kitchen_t1
+      - sensor.floor2_t1
+      - sensor.lightroom_t1
+      - sensor.smallroom_t1
+      - sensor.banya_t1
+      - sensor.banyahall_t1
+      - sensor.out_t1
+      - sensor.weather_temperature
+  hum_sensors_group:
+    name: Влажность
+    icon: mdi:percent
+#    view: true
+    entities:
+      - sensor.broadlink_sensor_humidity
+      - sensor.kitchenhum
+      - sensor.floor2hum
+      - sensor.lightroomhum
+      - sensor.smallroomhum
+      - sensor.banyahum
+      - sensor.banyahallhum
+      - sensor.outhum
+  power_sensors_group:
+    name: 220В
+    icon: mdi:power-plug
+#    view: true
+    entities:
+      - sensor.power
+      - sensor.voltage
+      - sensor.current
+      - sensor.kwh
+  other_sensors_group:
+    name: Другие датчики
+    icon: mdi:yin-yang
+#    view: true
+    entities:
+      - sensor.broadlink_sensor_air_quality
+      - sensor.broadlink_sensor_light
+      - sensor.broadlink_sensor_noise
+      - sensor.pressure
+  switchesxxx_group:
+    name: Выключатели
+    control: hidden
+    icon: mdi:light-switch
+#    view: true
+    entities:
+      - switch.livingroom_heater
+      - switch.smallroom_heater
+      - switch.lightroom_heater
+      - switch.kitchen_heater
+      - switch.boiler_switch
+      - switch.coldtube_switch
+      - switch.kanaliz_switch
+      - switch.banyatoilet_heater
+      - switch.banyahall_heater
+      - switch.banya_dehumidifier
+

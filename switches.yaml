@@ -1,0 +1,92 @@
+### switches.yaml
+
+#  - platform: broadlink
+#    update_interval: 60
+#    host: 192.168.1.36
+#    mac: 'b4:43:0d:af:68:04'
+#    type:  sp2
+#    friendly_name: 'Boiler'
+#  - platform: broadlink
+#    update_interval: 60
+#    host: 192.168.1.49
+#    mac: 'b4:43:0d:cb:e9:a9'
+#    type:  sp2
+#    friendly_name: 'Kitchen'
+#  - platform: broadlink
+#    update_interval: 60
+#    host: 192.168.1.34
+#    mac: 'b4:43:0d:af:c1:df'
+#    type:  sp2
+#    friendly_name: 'Smallroom'
+#  - platform: broadlink
+#    update_interval: 60
+#    host: 192.168.1.35
+#    mac: 'b4:43:0d:af:69:ce'
+#    type:  sp2
+#    friendly_name: 'Livingroom'
+#  - platform: broadlink
+#    update_interval: 60
+#    host: 192.168.1.37
+#    mac: 'b4:43:0d:af:c3:56'
+#    type:  sp2
+#    friendly_name: 'Kanaliz'
+#  - platform: broadlink
+#    update_interval: 60
+#    host: 192.168.1.47
+#    mac: 'b4:43:0d:cb:ff:1e'
+#    type:  sp2
+#    friendly_name: 'ColdTube'
+  - platform: command_line
+    switches:
+      banyatoilet_heater:
+        command_on: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh banyatoilet turnon'
+        command_off: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh banyatoilet turnoff'
+        command_state: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh banyatoilet state'
+        friendly_name: 'Баня (туалет)'
+      banya_dehumidifier:
+        command_on: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh banyadehumidifier turnon'
+        command_off: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh banyadehumidifier turnoff'
+        command_state: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh banyadehumidifier state'
+        friendly_name: 'Осушитель'
+      banyahall_heater:
+        command_on: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh banyahall turnon'
+        command_off: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh banyahall turnoff'
+        command_state: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh banyahall state'
+        friendly_name: 'Баня (холл)'
+      livingroom_heater:
+        command_on: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh livingroom turnon'
+        command_off: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh livingroom turnoff'
+        command_state: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh livingroom state'
+        friendly_name: 'Обогрев гостиной'
+      lightroom_heater:
+        command_on: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh lightroom turnon'
+        command_off: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh lightroom turnoff'
+        command_state: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh lightroom state'
+        friendly_name: 'Обогрев светлой'
+      smallroom_heater:
+        command_on: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh smallroom turnon'
+        command_off: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh smallroom turnoff'
+        command_state: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh smallroom state'
+        friendly_name: 'Обогрев мал комнаты'
+      kitchen_heater:
+        command_on: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh kitchen turnon'
+        command_off: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh kitchen turnoff'
+        command_state: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh kitchen state'
+        friendly_name: 'Обогрев кухни'
+      boiler_switch:
+        command_on: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh boiler turnon'
+        command_off: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh boiler turnoff'
+        command_state: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh boiler state'
+        friendly_name: 'Бойлер'
+      coldtube_switch:
+        command_on: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh coldtube turnon'
+        command_off: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh coldtube turnoff'
+        command_state: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh coldtube state'
+        friendly_name: 'Подогрев водопровода'
+      kanaliz_switch:
+        command_on: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh kanaliz turnon'
+        command_off: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh kanaliz turnoff'
+        command_state: '/home/rodion/rm3/python-broadlink/cli/broadlink.sh kanaliz state'
+        friendly_name: 'Подогрев канализации'
+
+

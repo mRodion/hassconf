@@ -1,0 +1,139 @@
+﻿group:
+  banya_group_view:
+    name: Баня 
+    control: hidden
+    entities:
+      - group.banyatoilet_group
+      - group.banyahall_group
+      - group.banya_dehumidifier
+      - group.banya_washer
+
+  banyatoilet_group:
+    name: Баня туалет 
+    control: hidden
+    entities:
+      - sensor.banya_t1
+      - climate.banyatoilet
+      - switch.banyatoilet_heater
+
+  banyahall_group:
+    name: Баня холл
+    control: hidden
+    entities:
+      - sensor.banyahall_t1
+      - switch.banyahall_heater
+
+  banya_dehumidifier:
+    name: Баня осушитель
+    control: hidden
+    entities:
+      - sensor.banya_t1
+      - sensor.banyahum
+      - switch.banya_dehumidifier
+      - climate.banyadehumidifier
+
+  banya_washer:
+    name: Баня помывочная
+    control: hidden
+    entities:
+      - sensor.banyawasherair
+    
+homeassistant:
+ customize:
+   sensor.banyawasherair:
+     friendly_name: Температура в помывочной
+     persistent: true
+
+sensor:
+ - platform: template
+   sensors:
+     banyawasherair:
+       friendly_name: BanyaWasherAir
+       unit_of_measurement: "°C"
+       value_template: "{{ state_attr('climate.6536374084f3eb51d3c0', 'current_temperature')|float / 2 }}"
+
+
+climate:
+  - platform: generic_thermostat
+    name: BanyaToilet
+    heater: switch.banyatoilet_heater
+    target_sensor: sensor.banya_t1
+    min_temp: -5
+    max_temp: 25
+    ac_mode: False
+    target_temp: 5
+    cold_tolerance: 0.3
+    hot_tolerance: 0.3
+    min_cycle_duration:
+      seconds: 5
+      minutes: 3
+    initial_operation_mode: "auto"
+
+  - platform: generic_thermostat
+    name: BanyaDehumidifier
+    heater: switch.banya_dehumidifier
+    target_sensor: sensor.banyahum
+    min_temp: -5
+    max_temp: 25
+    ac_mode: True
+    target_temp: 30
+    cold_tolerance: 0.3
+    hot_tolerance: 0.3
+    min_cycle_duration:
+      seconds: 5
+
+automation:
+  - alias: Turn off dehumidifier if temperature becames low
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: template
+        value_template: "{% if (states.sensor.banya_t1.state|float) < (12.0) %} true {% endif %}"
+    action:
+      - service: climate.turn_off
+        entity_id: climate.banyadehumidifier
+      - service: switch.turn_off
+        entity_id: switch.banya_dehumidifier
+        
+  - alias: Turn on dehumidifier if temperature becames high
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: template
+        value_template: "{% if (states.sensor.banya_t1.state|float) > (12.0) %} true {% endif %}"
+    action:
+      - service: climate.turn_on
+        entity_id: climate.banyadehumidifier
+      - service: switch.turn_on
+        entity_id: switch.banya_dehumidifier
+
+
+  - alias: "Turn on dehumidifier when hass starts"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: template
+        value_template: "{{ states.sensor.banya_t1.state|float >= 12 }}"
+    action:
+      - service: switch.turn_on
+        entity_id: switch.banya_dehumidifier
+      - service: climate.turn_on
+        entity_id: climate.banyadehumidifier
+
+  - alias: "Turn off dehumidifier when hass starts"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: template
+        value_template: "{{ states.sensor.banya_t1.state|float < 12 }}"
+    action:
+      - service: switch.turn_off
+        entity_id: switch.banya_dehumidifier
+      - service: climate.turn_off
+        entity_id: climate.banyadehumidifier

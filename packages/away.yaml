@@ -1,0 +1,214 @@
+﻿group:
+  away_group:
+    name: Состояние
+    control: hidden
+    entities:
+      - input_boolean.enable_heating
+#      - input_boolean.global_away_mode
+      - input_datetime.away_must_off_duration
+      - timer.away_must_off
+      - sensor.out_t1
+      - sensor.kitchen_t1
+      - sensor.lightroom_t1
+      - sensor.smallroom_t1
+      - sensor.livingroom_broadlink_temp
+      - sensor.banya_t1
+      - sensor.banyahall_t1
+      - sensor.banyawasherair
+      - binary_sensor.livingroom_heater_sensor2
+      - binary_sensor.smallroom_heater_sensor2
+      - binary_sensor.lightroom_heater_sensor2
+      - binary_sensor.kitchen_heater_sensor2
+      - binary_sensor.banyatoilet_heater_sensor2
+      - binary_sensor.banyahall_heater_sensor2
+      - switch.boiler_switch
+      - sensor.current
+
+homeassistant:
+  customize:
+    sensor.current:
+      icon: mdi:current-ac
+      friendly_name: Потребляемый ток (max 25A)
+    sensor.kitchen_t1:
+      friendly_name: Температура на кухне
+    sensor.lightroom_t1:
+      friendly_name: Температура в светлой
+    sensor.smallroom_t1:
+      friendly_name: Температура в маленькой
+    sensor.livingroom_broadlink_temp:
+      friendly_name: Температура в гостиной
+    sensor.banya_t1:
+      friendly_name: Температура в бане (туалет)
+    sensor.banyahall_t1:
+      friendly_name: Температура в бане (холл)
+    sensor.out_t1:
+      friendly_name: Температура на улице
+    sensor.floor2_t1:
+      friendly_name: Температура на 2 этаже
+    input_datetime.away_must_off_duration:
+      friendly_name: Включить отопление через...
+    switch.boiler_switch:
+      friendly_name: Бойлер
+      icon: mdi:water
+      icon_template: '{% if is_state("switch.boiler_switch", "on") %}mdi:water{% else %}mdi:water-off{% endif %}'
+    timer.away_must_off:
+      persistent: true
+
+#      templates:
+#        icon: "if (state === 'on') return 'mdi:water'; else return 'mdi:water-off';"
+timer:
+  away_must_off:
+    name: Отопление включится через
+    duration: '08:00:00'
+
+input_datetime:
+  away_must_off_duration:
+    has_date: false
+    has_time: true
+    initial: '00:00'
+
+input_boolean:
+  enable_heating:
+    name: Включить отопление
+    icon: mdi:radiator
+    
+binary_sensor:
+  - platform: template
+    sensors:
+      livingroom_heater_sensor2:
+        friendly_name: "Обогреватель гостиной"
+        value_template: "{{ is_state('switch.livingroom_heater', 'on') }}"
+        icon_template: '{% if is_state("switch.livingroom_heater", "on") %}mdi:radiator{% else %}mdi:radiator-off{% endif %}'
+      smallroom_heater_sensor2:
+        friendly_name: "Обогреватель маленькой"
+        value_template: "{{ is_state('switch.smallroom_heater', 'on') }}"
+        icon_template: '{% if is_state("switch.smallroom_heater", "on") %}mdi:radiator{% else %}mdi:radiator-off{% endif %}'
+      lightroom_heater_sensor2:
+        friendly_name: "Обогреватель светлой"
+        value_template: "{{ is_state('switch.lightroom_heater', 'on') }}"
+        icon_template: '{% if is_state("switch.lightroom_heater", "on") %}mdi:radiator{% else %}mdi:radiator-off{% endif %}'
+
+      kitchen_heater_sensor2:
+        friendly_name: "Обогреватель кухни"
+        value_template: "{{ is_state('switch.kitchen_heater', 'on') }}"
+        icon_template: '{% if is_state("switch.kitchen_heater", "on") %}mdi:radiator{% else %}mdi:radiator-off{% endif %}'
+      boiler_sensor2:
+        friendly_name: "Бойлер"
+        value_template: "{{ is_state('switch.boiler_switch', 'on') }}"
+
+      banyatoilet_heater_sensor2:
+        friendly_name: "Обогреватель бани (туалет)"
+        value_template: "{{ is_state('switch.banyatoilet_heater', 'on') }}"
+        icon_template: '{% if is_state("switch.banyatoilet_heater", "on") %}mdi:radiator{% else %}mdi:radiator-off{% endif %}'
+      banyahall_heater_sensor2:
+        friendly_name: "Обогреватель бани (холл)"
+        value_template: "{{ is_state('switch.banyahall_heater', 'on') }}"
+        icon_template: '{% if is_state("switch.banyahall_heater", "on") %}mdi:radiator{% else %}mdi:radiator-off{% endif %}'
+
+automation:
+  - alias: "Time to turn off away mode"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.away_must_off
+    action:
+    - service: input_boolean.turn_off
+      data:
+        entity_id: input_boolean.global_away_mode
+
+  - alias: "Cancel away timer if away mode switched on"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: input_boolean.global_away_mode
+#        from: 'off'
+#        to: 'on'
+    action:
+      - service: timer.cancel
+        entity_id: timer.away_must_off
+
+  - alias: starttimer
+    trigger:
+      platform: state
+      entity_id: input_datetime.away_must_off_duration
+    condition:
+      - condition: template
+        value_template: "{{ states.input_datetime.away_must_off_duration.state| string != '00:00:00' }}"
+    action:
+      service: timer.start
+      entity_id: timer.away_must_off
+      data_template:
+        duration: >
+          {{ trigger.to_state.state }}
+  - alias: stoptimer
+    trigger:
+      platform: state
+      entity_id: input_datetime.away_must_off_duration
+    condition:
+      - condition: template
+        value_template: "{{ states.input_datetime.away_must_off_duration.state| string == '00:00:00' }}"
+    action:
+      service: timer.cancel
+      entity_id: timer.away_must_off
+
+  - alias: "Set enable heating to the correct OFF state"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: homeassistant
+        event: start
+      - platform: state
+        entity_id: input_boolean.global_away_mode
+    condition:
+      - condition: state
+        entity_id: input_boolean.global_away_mode
+        state: 'on'
+    action:
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.enable_heating
+
+  - alias: "Set enable heating to the correct ON state"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: homeassistant
+        event: start
+      - platform: state
+        entity_id: input_boolean.global_away_mode
+    condition:
+      - condition: state
+        entity_id: input_boolean.global_away_mode
+        state: 'off'
+    action:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.enable_heating
+
+  - alias: "Set awaymode to the correct OFF state"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: input_boolean.enable_heating
+        to: 'on'
+    action:
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.global_away_mode
+
+  - alias: "Set awaymode to the correct ON state"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: state
+        entity_id: input_boolean.enable_heating
+        to: 'off'
+    action:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.global_away_mode

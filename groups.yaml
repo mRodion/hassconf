@@ -1,0 +1,69 @@
+# Example configuration.yaml entry
+  default_view:
+    name: Нет дома
+    icon: mdi:home-lock
+    view: true
+    entities:
+      - group.away_group
+  cam_view:
+    name: Камеры
+    icon: mdi:cctv
+    view: true
+    entities:
+      - camera.webcam1
+      - camera.webcam2
+      - camera.webcam3usb
+  livingroom_view:
+    name: Гостиная
+    icon: mdi:floor-plan
+    view: true
+    entities:
+      - group.livingroom_climate_group
+  small_view:
+    name: Маленькая
+    icon: mdi:bed-empty
+    view: true
+    entities:
+      - group.smallroom_climate_group
+  lightroom_view:
+    name: Светлая
+    icon: mdi:window-maximize
+    view: true
+    entities:
+      - group.lightroom_climate_group
+  kitchen_view:
+    name: Кухня
+    icon: mdi:silverware-variant
+    view: true
+    entities:
+      - group.kitchen_climate_group
+  banya_view:
+    name: Баня
+    icon: mdi:hot-tub
+    view: true
+    entities:
+      - group.banyatoilet_group
+      - group.banyahall_group
+      - group.banya_dehumidifier
+      - group.banya_washer
+  climate_view:
+    name: Климат
+    icon: mdi:air-conditioner
+    view: true
+    entities:
+      - group.livingroom_climate_group_ex
+      - group.smallroom_climate_group_ex
+      - group.kitchen_climate_group_ex
+      - group.lightroom_climate_group_ex
+  sensors_group:
+    name: Датчики и выключатели
+    icon: mdi:engine-outline
+    view: true
+    entities:
+      - group.temp_sensors_group
+      - group.hum_sensors_group
+      - group.power_sensors_group
+      - group.other_sensors_group
+      - group.switchesxxx_group
+    
+  

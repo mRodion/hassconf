@@ -1,0 +1,15 @@
+input_boolean.global_away_mode:
+  persistent: true
+
+group.all_switches:
+  hidden: false
+group.all_automations:
+  hidden: false
+group.all_sensors:
+  hidden: false
+group.all_groups:
+  hidden: false
+group.all_climates:
+  hidden: false
+
+

@@ -1,0 +1,252 @@
+﻿group:
+  kitchen_climate_group_ex:
+    name: Климат кухни
+    control: hidden
+    entities:
+      - input_boolean.kitchen_allow_thermostat
+      - input_number.kitchen_normal_temp
+      - input_number.kitchen_away_temp
+      - sensor.kitchen_t1
+      - switch.kitchen_heater
+      - climate.kitchen_thermostat
+      - input_boolean.global_away_mode
+  kitchen_climate_group:
+    name: Климат кухни
+    control: hidden
+    entities:
+      - input_number.kitchen_normal_temp
+      - sensor.kitchen_t1
+      - binary_sensor.kitchen_heater_sensor
+#      - binary_sensor.away_mode_sensor
+
+
+binary_sensor:
+  - platform: template
+    sensors:
+      kitchen_heater_sensor:
+        friendly_name: "Обогреватель"
+        value_template: "{{ is_state('switch.kitchen_heater', 'on') }}"
+        icon_template: '{% if is_state("switch.kitchen_heater", "on") %}mdi:radiator{% else %}mdi:radiator-off{% endif %}'
+
+      
+input_number:
+  kitchen_normal_temp:
+    name: Держать температуру
+    initial: 22
+    min: 1
+    max: 30
+    step: 0.5
+    unit_of_measurement: "°C"
+    mode: slider
+  kitchen_away_temp:
+    name: Подогрев
+    initial: 5
+    min: 1
+    max: 30
+    step: 0.5
+    unit_of_measurement: "°C"
+    mode: slider
+
+input_boolean:
+  kitchen_allow_thermostat:
+    initial: on
+    name: Вкл/выкл
+    icon: mdi:thermometer-lines
+    
+homeassistant:
+  customize:
+    input_number.kitchen_normal_temp:
+      icon: mdi:thermometer-lines
+      persistent: true
+    input_number.kitchen_away_temp:
+      icon: mdi:thermometer-lines
+      persistent: true
+    input_boolean.kitchen_allow_thermostat:
+      persistent: true
+
+
+climate:
+  - platform: generic_thermostat
+    name: Kitchen thermostat
+    heater: switch.kitchen_heater
+    target_sensor: sensor.kitchen_t1
+    min_temp: 1
+    max_temp: 25
+    hot_tolerance: 0.5
+    cold_tolerance: 0
+    min_cycle_duration:
+      seconds: 5
+    operation_mode: Heat
+    
+automation:
+  - alias: "If kitchen Thermostat is On after restart and global_away_mode is Off then turn on climate and set normal temp"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: input_boolean.kitchen_allow_thermostat
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.global_away_mode
+        state: 'off'
+    action:
+      - service: climate.turn_on
+        entity_id: climate.kitchen_thermostat
+      - service: climate.set_temperature
+        data_template:
+          entity_id: climate.kitchen_thermostat
+          temperature: '{{ states.input_number.kitchen_normal_temp.state}}'
+
+  - alias: "If kitchen Thermostat is On after restart and global_away_mode is On then turn on climate and set away temp"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: input_boolean.kitchen_allow_thermostat
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.global_away_mode
+        state: 'on'
+    action:
+      - service: climate.turn_on
+        entity_id: climate.kitchen_thermostat
+      - service: climate.set_temperature
+        data_template:
+          entity_id: climate.kitchen_thermostat
+          temperature: '{{ states.input_number.kitchen_away_temp.state}}'
+
+  - alias: "If kitchen Thermostat is Off after restart, turn off climate"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: input_boolean.kitchen_allow_thermostat
+        state: 'off'
+    action:
+      - service: climate.turn_off
+        entity_id: climate.kitchen_thermostat
+
+  - alias: "Thermostat Kitchen On, away is Off"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      platform: state
+      entity_id: input_boolean.kitchen_allow_thermostat
+      from: 'off'
+      to: 'on'
+    condition:
+      - condition: state
+        entity_id: input_boolean.global_away_mode
+        state: 'off'
+    action:
+      - service: climate.turn_on
+        entity_id: climate.kitchen_thermostat
+      - service: climate.set_temperature
+        data_template:
+          entity_id: climate.kitchen_thermostat
+          temperature: '{{ states.input_number.kitchen_normal_temp.state}}'
+
+  - alias: "Thermostat Kitchen On, away is On"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      platform: state
+      entity_id: input_boolean.kitchen_allow_thermostat
+      from: 'off'
+      to: 'on'
+    condition:
+      - condition: state
+        entity_id: input_boolean.global_away_mode
+        state: 'on'
+    action:
+      - service: climate.turn_on
+        entity_id: climate.kitchen_thermostat
+      - service: climate.set_temperature
+        data_template:
+          entity_id: climate.kitchen_thermostat
+          temperature: '{{ states.input_number.kitchen_away_temp.state}}'
+
+  - alias: "kitchen Thermostat Off"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      platform: state
+      entity_id: input_boolean.kitchen_allow_thermostat
+      from: 'on'
+      to: 'off'
+    action:
+      - service: climate.turn_off
+        entity_id: climate.kitchen_thermostat
+
+  - alias: "kitchen thermostat Away is off"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      platform: state
+      entity_id: input_boolean.global_away_mode
+      from: 'on'
+      to: 'off'
+    action:
+      - service: climate.turn_on
+        entity_id: climate.kitchen_thermostat
+      - service: climate.set_temperature
+        data_template:
+          entity_id: climate.kitchen_thermostat
+          temperature: '{{ states.input_number.kitchen_normal_temp.state}}'
+
+  - alias: "kitchen thermostat Away is on"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      platform: state
+      entity_id: input_boolean.global_away_mode
+      from: 'off'
+      to: 'on'
+    action:
+      - service: climate.turn_on
+        entity_id: climate.kitchen_thermostat
+      - service: climate.set_temperature
+        data_template:
+          entity_id: climate.kitchen_thermostat
+          temperature: '{{ states.input_number.kitchen_away_temp.state}}'
+
+  - alias: "Change kitchen normal temp"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      platform: state
+      entity_id: input_number.kitchen_normal_temp
+    condition:
+      - condition: state
+        entity_id: input_boolean.global_away_mode
+        state: 'off'        
+    action:
+      - service: climate.set_temperature
+        data_template:
+          entity_id: climate.kitchen_thermostat
+          temperature: '{{ states.input_number.kitchen_normal_temp.state}}'
+
+  - alias: "Change kitchen away temp"
+    hide_entity: true
+    initial_state: 'on'
+    trigger:
+      platform: state
+      entity_id: input_number.kitchen_away_temp
+    condition:
+      - condition: state
+        entity_id: input_boolean.global_away_mode
+        state: 'on'        
+    action:
+      - service: climate.set_temperature
+        data_template:
+          entity_id: climate.kitchen_thermostat
+          temperature: '{{ states.input_number.kitchen_away_temp.state}}'

@@ -1,0 +1,9 @@
+- id: '1525220727848'
+  alias: Dummy - delete me as there is new automation added to main automation file
+  trigger:
+  - platform: template
+    value_template: 'false'
+  condition: []
+  action:
+  - delay: '1'
+

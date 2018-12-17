@@ -1,0 +1,67 @@
+﻿group:
+  tubes_group:
+    name: Обогрев труб
+    control: hidden
+    icon: mdi:water-pump
+    view: true
+    entities:
+      - group.tubes_group_sub
+  tubes_group_sub:
+    name: Обогрев труб
+    control: hidden
+    icon: mdi:water-pump
+    entities:
+      - sensor.out_t1
+      - binary_sensor.bs_coldtube
+      - binary_sensor.bs_kanaliz
+      - climate.cold_tubes
+      - climate.kanaliz
+  
+
+binary_sensor:
+  - platform: template
+    sensors:
+      bs_coldtube:
+        friendly_name: "Трубопровод"
+        value_template: "{{ is_state('switch.coldtube_switch', 'on') }}"
+        icon_template: '{% if is_state("switch.coldtube_switch", "on") %}mdi:radiator{% else %}mdi:radiator-off{% endif %}'
+      bs_kanaliz:
+        friendly_name: "Канализация"
+        value_template: "{{ is_state('switch.kanaliz_switch', 'on') }}"
+        icon_template: '{% if is_state("switch.kanaliz_switch", "on") %}mdi:radiator{% else %}mdi:radiator-off{% endif %}'
+
+climate:
+  - platform: generic_thermostat
+    name: Cold tubes
+    heater: switch.coldtube_switch
+    target_sensor: sensor.out_t1
+    min_temp: -5
+    max_temp: 2
+    ac_mode: False
+    target_temp: -5
+    cold_tolerance: 0.3
+    hot_tolerance: 0
+    min_cycle_duration:
+      seconds: 5
+#    keep_alive:
+#      minutes: 3
+    initial_operation_mode: "auto"
+#    away_temp: 5
+
+  - platform: generic_thermostat
+    name: Kanaliz
+    heater: switch.kanaliz_switch
+    target_sensor: sensor.out_t1
+    min_temp: -5
+    max_temp: 2
+    ac_mode: False
+    target_temp: -5
+    cold_tolerance: 0.3
+    hot_tolerance: 0
+    min_cycle_duration:
+      seconds: 5
+#    keep_alive:
+#      minutes: 3
+    initial_operation_mode: "auto"
+#    away_temp: 5
+
