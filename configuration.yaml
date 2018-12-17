@@ -119,15 +119,9 @@ camera:
 #  custom_ui: local
 
 
-#tuya:
-#  username: rdk117@mail.ru
-#  password: 2wFRmfik
-#  country_code: 7
-#  platform: smart_life
-
 tuya:
-  username: rdk117@mail.ru
-  password: 2wFRmfik
-  country_code: 7
+  username: !secret tuyalogin
+  password: !secret tuyapass
+  country_code: !secret tuyacountry
   platform: smart_life
 
