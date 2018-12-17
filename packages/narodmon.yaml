@@ -1,4 +1,4 @@
-﻿#Send data to narodmon every 5 min by MQTT   
+﻿#Send data to narodmon every 5 min by MQTT
 automation:
   - alias: "Kitchen heater trurned on by narodmon"
     trigger:
